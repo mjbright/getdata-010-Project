@@ -106,10 +106,6 @@ dtTidy <- dt[, list(count = .N, average = mean(value)), by=key(dt)]
 write.table(dtTidy, "tidy.data.txt", row.name=FALSE)
 
 
-knitr("makeCodebook.Rmd", output="codebook.md", encoding="ISO8859-1", quiet=TRUE)
-markdownToHTML("codebook.md", "codebook.html")
-
-
 
 
 
