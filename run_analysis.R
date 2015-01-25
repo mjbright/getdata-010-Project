@@ -1,4 +1,5 @@
 
+
 # Install needed packages:
 #
 #install.packages("data.table")
@@ -11,6 +12,9 @@ library("knitr")
 
 # Change to project directory:
 setwd("D:/DATA/GettingCleaningData/Project")
+
+##################################################################################
+# 1. Merges the training and the test sets to create one data set.
 
 # Read in subject training/test data:
 dtTrain <- fread("Dataset/train/subject_train.txt")
@@ -46,6 +50,9 @@ dt <- cbind(dtSubject, dt)
 
 setkey(dt, subject, activityNum)
 
+##################################################################################
+# 2. Extracts only the measurements on the mean and standard deviation for each measurement. 
+
 dtFeatures <- fread("Dataset/features.txt")
 setnames(dtFeatures, names(dtFeatures), c("featureNum", "featureName"))
 
@@ -58,12 +65,21 @@ dtFeatures$featureCode
 select <- c(key(dt), dtFeatures$featureCode)
 dt <- dt[, select, with=FALSE]
 
+##################################################################################
+# 3. Uses descriptive activity names to name the activities in the data set
+
 dtActivityNames <- fread("Dataset/activity_labels.txt")
 setnames(dtActivityNames, names(dtActivityNames), c("activityNum", "activityName"))
 
 dt <- merge(dt, dtActivityNames, by="activityNum", all.x=TRUE)
 
+##################################################################################
+# 4. Appropriately labels the data set with descriptive variable names. 
+
 setkey(dt, subject, activityNum, activityName)
+
+##################################################################################
+# 5. From the data set in step 4, creates a second, independent tidy data set with the average of each variable for each activity and each subject.
 
 dt <- data.table(melt(dt, key(dt), variable.name="featureCode"))
 
@@ -102,6 +118,9 @@ r1 == r2
 
 setkey(dt, subject, activity, featDomain, featAcceleration, featInstrument, featJerk, featMagnitude, featVariable, featAxis)
 dtTidy <- dt[, list(count = .N, average = mean(value)), by=key(dt)]
+
+##################################################################################
+# Please upload the tidy data set created in step 5 of the instructions. Please upload your data set as a txt file created with write.table() using row.name=FALSE (do not cut and paste a dataset directly into the text box, as this may cause errors saving your submission).
 
 write.table(dtTidy, "tidy.data.txt", row.name=FALSE)
 
